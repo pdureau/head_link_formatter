@@ -1,0 +1,8 @@
+name: Head Link Formatter
+description: 'Display a link field as a link element in HTML head.'
+core: 8.x
+package: 'Fields'
+dependencies:
+- link
+type: module
+version: 8.x-1.0
