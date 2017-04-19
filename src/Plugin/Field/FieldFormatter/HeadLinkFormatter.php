@@ -5,6 +5,9 @@ namespace Drupal\head_link_formatter\Plugin\Field\FieldFormatter;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\FormatterBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Url;
+use Drupal\Core\Field\Plugin\Field\FieldType\EntityReferenceItem;
+use Drupal\link\LinkItemInterface;
 
 /**
  * Plugin implementation of the 'head_link' formatter.
@@ -14,7 +17,8 @@ use Drupal\Core\Form\FormStateInterface;
  *   label = @Translation("Head link"),
  *   description = @Translation("Add the link to the HTML head"),
  *   field_types = {
- *     "link"
+ *     "link",
+ *     "entity_reference"
  *   }
  * )
  */
@@ -88,7 +92,9 @@ class HeadLinkFormatter extends FormatterBase {
         $bundle = $entity->bundle();
         $mapping = rdf_get_mapping($entity_type, $bundle);
         $field_mapping = $mapping->getPreparedFieldMapping($field_name);
-        $rel = implode(" ", $field_mapping["properties"]);
+        if (isset($field_mapping["properties"])) {
+          $rel = implode(" ", $field_mapping["properties"]);
+        }
       }
     }
     if (empty($rel)) {
@@ -98,9 +104,19 @@ class HeadLinkFormatter extends FormatterBase {
 
     $elements = [];
     foreach ($items as $delta => $item) {
+
+      $href = "";
+      if ($item instanceof LinkItemInterface) {
+        $href = $item->getUrl()->getUri();
+      }
+      if ($item instanceof EntityReferenceItem) {
+        $href = $item->get('entity')->getTarget()->getValue()->url();
+        // TODO: Si pas dans settings, prendre titre du noeud
+      }
+
       $link = [
         'rel' => $rel,
-        'href' => $item->getUrl()->getUri(),
+        'href' => $href,
       ];
       if (!empty($this->getSetting('title'))) { 
         $link["title"] = $this->getSetting('title');
@@ -111,8 +127,10 @@ class HeadLinkFormatter extends FormatterBase {
       $elements['#attached']['html_head_link'][] = [
         $link,
       ];
+
     }
-    return $elements;
+ 
+   return $elements;
   }
 
 }
