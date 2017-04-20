@@ -104,20 +104,18 @@ class HeadLinkFormatter extends FormatterBase {
 
     $elements = [];
     foreach ($items as $delta => $item) {
-
-      $href = "";
-      if ($item instanceof LinkItemInterface) {
-        $href = $item->getUrl()->getUri();
-      }
-      if ($item instanceof EntityReferenceItem) {
-        $href = $item->get('entity')->getTarget()->getValue()->url();
-        // TODO: Si pas dans settings, prendre titre du noeud
-      }
-
       $link = [
         'rel' => $rel,
-        'href' => $href,
       ];
+      if ($item instanceof LinkItemInterface) {
+        $link["href"] = $item->getUrl()->getUri();
+      }
+      if ($item instanceof EntityReferenceItem) {
+        $link["href"] = $item->get('entity')->getTarget()->getValue()->url();
+      }
+      if ($item instanceof EntityReferenceItem) {
+        $link["title"] = $item->get('entity')->getTarget()->getValue()->label();
+      }
       if (!empty($this->getSetting('title'))) { 
         $link["title"] = $this->getSetting('title');
       }
