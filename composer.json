@@ -2,13 +2,13 @@
   "name": "drupal/head_link_formatter",
   "description": "Display a link field as a link element in HTML head.",
   "type": "drupal-module",
-  "license": "GPL-2.0+",
+  "license": "GPL-2.0-or-later",
   "authors": [
     {
       "name": "Pierre Dureau"
-    },
+    }
   ],
   "require": {
-    "drupal/drupal": "8.*",
+    "drupal/drupal": "8.*"
   }
 }
